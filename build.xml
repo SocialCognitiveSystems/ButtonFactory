@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
  
-<project name="TouchUI" default="run" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+<project name="ButtomFactory" default="run" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
  
 <property name="build.src.dir" value="src"/>
 <property name="build.classes.dir" value="classes"/>
 <property name="build.dist.dir" value="dist"/>
   
 <target name="run" depends="dist">
-    <java jar="${build.dist.dir}/TouchUI.jar" fork="true"/>
+    <java jar="${build.dist.dir}/ButtonFactory.jar" fork="true"/>
 </target>
    
 <target name="dist" depends="compile">
     <mkdir dir="${build.dist.dir}"/>
            
-    <jar destfile="${build.dist.dir}/TouchUI.jar" basedir="classes">
+    <jar destfile="${build.dist.dir}/ButtonFactory.jar" basedir="classes">
         <manifest>
             <attribute name="Main-Class" value="main.java.StartUp"/>
         </manifest>

@@ -138,14 +138,14 @@ public class TestUp {
 		iu = new LocalMessageIU("touch_ui_request");
 		iu.getPayload().put("cmd", "removeAll");		
 		out.add(iu);
-		System.out.println("next step adds one free button and four in the grid, two ius needed");
+		System.out.println("next step adds two free buttons and four in the grid, two ius needed");
 		s.nextLine();
 		
 		iu = new LocalMessageIU("touch_ui_request");
-		iu.getPayload().put("texts", "TEST");		
-		iu.getPayload().put("translateX", "100");
-		iu.getPayload().put("translateY", "200");
-		iu.getPayload().put("colorButton", "red");
+		iu.getPayload().put("texts", "TEST|A");		
+		iu.getPayload().put("translateX", "100|110");
+		iu.getPayload().put("translateY", "200|700");
+		iu.getPayload().put("colorButton", "red|orange");
 		out.add(iu);
 		
 		iu = new LocalMessageIU("touch_ui_request");
@@ -161,9 +161,11 @@ public class TestUp {
 		iu.getPayload().put("texts", "A|B|C|D|E");		
 		out.add(iu);
 		
-		s.close();
 		
-		System.out.println("end of test");
+		
+		System.out.println("end of test, ENTER exits");
+		s.nextLine();
+		s.close();
 		System.exit(0);
 		
 	}

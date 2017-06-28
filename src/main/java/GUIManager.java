@@ -61,7 +61,13 @@ public class GUIManager extends Application implements ITouchUI {
 
 	public static GUIManager gui;
 	Stage primaryStage;
+	
 	Group root;
+	
+	Scene scene = null;
+	List<Scene> scenes = null;
+	List<Group> roots = null;
+	List<Stage> stages = null;
 
 	int id = 0;
 
@@ -90,6 +96,13 @@ public class GUIManager extends Application implements ITouchUI {
 	int maxColumn = 2;
 
 	int minPos = 0;
+	
+	double minX = 0;
+	double minY = 0;
+	double maxX = 0;
+	double maxY = 0;
+	double maxXCustom = 0;
+	double maxYCustom = 0;
 
 	List<Rectangle> rectancles;
 	List<Text> texts;
@@ -100,7 +113,6 @@ public class GUIManager extends Application implements ITouchUI {
 	List<StackPane> panesCustom;
 
 	List<String> handles;
-
 	OutputBuffer out = new OutputBuffer("touch_ui");
 
 	public IpaacaControl ic;
@@ -134,17 +146,31 @@ public class GUIManager extends Application implements ITouchUI {
 		textsCustom = new ArrayList<Text>();
 		panesCustom = new ArrayList<StackPane>();
 
+		roots = new ArrayList<>();
+		stages = new ArrayList<>();
+		scenes = new ArrayList<>();
+		
 		primaryStage = stage;
 		root = new Group();
 
-		Scene scene = null;
-		scene = new Scene(root, xres, yres, Color.TRANSPARENT);
-
+//		scene = new Scene(root, xres, yres, Color.TRANSPARENT);
+		scene = new Scene(root, 10, 10, Color.TRANSPARENT);
+		
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
-		primaryStage.setTitle("touch ui");
+		primaryStage.setTitle("ButtonFactory");
 		primaryStage.setScene(scene);
 		primaryStage.setAlwaysOnTop(true);
-
+		
+//		stageCustom = new Stage();
+//		stageCustom.initStyle(StageStyle.TRANSPARENT);
+//		stageCustom.setTitle("ButtonFactory - Custom Buttons");
+//		stageCustom.setScene(scene2);
+//		stageCustom.setAlwaysOnTop(true);
+//		stageCustom.setX(xres);
+//		stageCustom.setY(yres);
+//		stageCustom.setWidth(100);
+//		stageCustom.setHeight(100);
+		
 		primaryStage.show();
 
 	}
@@ -192,9 +218,18 @@ public class GUIManager extends Application implements ITouchUI {
 				offsetX = (pos % maxColumn) * (r.getWidth() + marginX);
 				offsetY = (pos / maxColumn) * (r.getHeight() + marginY);
 
-				sp.setLayoutX(translateX + offsetX);
-				sp.setLayoutY(translateY + offsetY);
+//				sp.setLayoutX(translateX + offsetX);
+//				sp.setLayoutY(translateY + offsetY);
 
+				sp.setLayoutX(offsetX);
+				sp.setLayoutY(offsetY);
+				
+
+				primaryStage.setWidth(maxX - minX);
+				primaryStage.setHeight(maxY - minY);
+				primaryStage.setX(translateX);
+				primaryStage.setY(translateY);
+				
 				sp.setOnMouseClicked(new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(MouseEvent event) {
@@ -271,13 +306,26 @@ public class GUIManager extends Application implements ITouchUI {
 				panes.add(sp);
 			}
 
+			StackPane temp = panes.get(panes.size() - 1);
+			
+			if(maxX < temp.getLayoutX() + r.getWidth()) {
+				maxX = temp.getLayoutX() + r.getWidth() + 5;
+			}
+			if(maxY < temp.getLayoutY() + r.getHeight()) {
+				maxY = temp.getLayoutY() + r.getHeight() + 5;
+			}
+			System.out.println(maxX);
+			
+			primaryStage.setWidth(maxX);
+			primaryStage.setHeight(maxY);
+			
 			iv.setVisible(true);
 			rectancles.get(pos).setVisible(true);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		
 	}
 
 	public void updateButton(int id, String text) {
@@ -312,8 +360,16 @@ public class GUIManager extends Application implements ITouchUI {
 				offsetX = (id % maxColumn) * (r.getWidth() + marginX);
 				offsetY = (id / maxColumn) * (r.getHeight() + marginY);
 
-				sp.setLayoutX(translateX + offsetX);
-				sp.setLayoutY(translateY + offsetY);
+//				sp.setLayoutX(translateX + offsetX);
+//				sp.setLayoutY(translateY + offsetY);
+				
+				sp.setLayoutX(offsetX);
+				sp.setLayoutY(offsetY);
+
+				primaryStage.setWidth(maxX - minX);
+				primaryStage.setHeight(maxY - minY);
+				primaryStage.setX(translateX);
+				primaryStage.setY(translateY);
 
 				sp.setOnMouseClicked(new EventHandler<MouseEvent>() {
 					@Override
@@ -363,9 +419,17 @@ public class GUIManager extends Application implements ITouchUI {
 				offsetX = (id % maxColumn) * (r.getWidth() + marginX);
 				offsetY = (id / maxColumn) * (r.getHeight() + marginY);
 
-				sp.setLayoutX(translateX + offsetX);
-				sp.setLayoutY(translateY + offsetY);
+//				sp.setLayoutX(translateX + offsetX);
+//				sp.setLayoutY(translateY + offsetY);
 
+				sp.setLayoutX(offsetX);
+				sp.setLayoutY(offsetY);
+
+				primaryStage.setWidth(maxX - minX);
+				primaryStage.setHeight(maxY - minY);
+				primaryStage.setX(translateX);
+				primaryStage.setY(translateY);
+				
 				sp.setOnMouseClicked(new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(MouseEvent event) {
@@ -393,6 +457,16 @@ public class GUIManager extends Application implements ITouchUI {
 				sp.getChildren().addAll(r, t);
 			}
 
+			StackPane temp = panes.get(id);
+			
+			if(maxX < temp.getLayoutX() + r.getWidth()) {
+				maxX = temp.getLayoutX() + r.getWidth() + 5;
+			}
+			if(maxY < temp.getLayoutY() + r.getHeight()) {
+				maxY = temp.getLayoutY() + r.getHeight() + 5;
+			}
+			primaryStage.setWidth(maxX);
+			primaryStage.setHeight(maxY);
 			rectancles.get(id).setVisible(true);
 			texts.get(id).setVisible(true);
 
@@ -550,6 +624,7 @@ public class GUIManager extends Application implements ITouchUI {
 	public void addButton(String text, int id, String width2, String height2, String colorButton, String colorPressed, String colorBorder,
 			String font2, String fontSize2, String fontBold, String fontColor2, String opacity2, String marginX2, String marginY2) {
 
+		
 		if (width2 == null) {
 			width2 = String.valueOf(width);
 		}
@@ -596,7 +671,8 @@ public class GUIManager extends Application implements ITouchUI {
 			}
 
 			Rectangle r = new Rectangle(Double.parseDouble(width2), Double.parseDouble(height2), getColor(colorButton));
-
+		
+			
 			if (rectancles.size() <= id) {
 
 				r.setStroke(getColor(colorBorder));
@@ -619,9 +695,16 @@ public class GUIManager extends Application implements ITouchUI {
 				offsetX = (id % maxColumn) * (r.getWidth() + Double.parseDouble(marginX2));
 				offsetY = (id / maxColumn) * (r.getHeight() + Double.parseDouble(marginY2));
 
-				sp.setLayoutX(translateX + offsetX);
-				sp.setLayoutY(translateY + offsetY);
+//				sp.setLayoutX(translateX + offsetX);
+//				sp.setLayoutY(translateY + offsetY);
+				sp.setLayoutX(offsetX);
+				sp.setLayoutY(offsetY);
 
+				primaryStage.setWidth(maxX - minX);
+				primaryStage.setHeight(maxY - minY);
+				primaryStage.setX(translateX);
+				primaryStage.setY(translateY);
+				
 				Color buttonC = getColor(colorButton);
 				Color pressedC = getColor(colorPressed);
 
@@ -676,9 +759,17 @@ public class GUIManager extends Application implements ITouchUI {
 				offsetX = (id % maxColumn) * (r.getWidth() + Double.parseDouble(marginX2));
 				offsetY = (id / maxColumn) * (r.getHeight() + Double.parseDouble(marginY2));
 
-				sp.setLayoutX(translateX + offsetX);
-				sp.setLayoutY(translateY + offsetY);
+//				sp.setLayoutX(translateX + offsetX);
+//				sp.setLayoutY(translateY + offsetY);
 
+				sp.setLayoutX(offsetX);
+				sp.setLayoutY(offsetY);
+
+				primaryStage.setWidth(maxX - minX);
+				primaryStage.setHeight(maxY - minY);
+				primaryStage.setX(translateX);
+				primaryStage.setY(translateY);
+				
 				Color buttonC = getColor(colorButton);
 				Color pressedC = getColor(colorPressed);
 
@@ -709,9 +800,19 @@ public class GUIManager extends Application implements ITouchUI {
 				sp.getChildren().addAll(r, t);
 			}
 
+			StackPane temp = panes.get(id);
+			
+			if(maxX < temp.getLayoutX() + r.getWidth()) {
+				maxX = temp.getLayoutX() + r.getWidth() + 5;
+			}
+			if(maxY < temp.getLayoutY() + r.getHeight()) {
+				maxY = temp.getLayoutY() + r.getHeight() + 5;
+			}
+			
 			rectancles.get(id).setVisible(true);
 			texts.get(id).setVisible(true);
-
+			primaryStage.setWidth(maxX);
+			primaryStage.setHeight(maxY);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -792,18 +893,43 @@ public class GUIManager extends Application implements ITouchUI {
 
 		t.setFont(Font.font(font2, bold, Double.parseDouble(fontSize2)));
 
-		sp.setLayoutX(Double.parseDouble(translateX2));
-		sp.setLayoutY(Double.parseDouble(translateY2));
+//		sp.setLayoutX(Double.parseDouble(translateX2));
+//		sp.setLayoutY(Double.parseDouble(translateY2));
 
+		Stage stageCustom = new Stage();
+		Group rootC = new Group();
+		Scene scene = new Scene(rootC, 10, 10, Color.TRANSPARENT);
+		stageCustom.initStyle(StageStyle.TRANSPARENT);
+		stageCustom.setTitle("ButtonFactory - Custom Button");
+		stageCustom.setScene(scene);
+		stageCustom.setAlwaysOnTop(true);
+		stageCustom.setX(xres);
+		stageCustom.setY(yres);
+		stageCustom.setWidth(r.getWidth() + 5);
+		stageCustom.setHeight(r.getHeight() + 5);
+		
+		stageCustom.setX(Double.parseDouble(translateX2));		
+		stageCustom.setY(Double.parseDouble(translateY2));
+		
+		stages.add(stageCustom);
+		scenes.add(scene);
+		roots.add(rootC);
+		
+		
 		r.setVisible(true);
 		t.setVisible(true);
 		sp.setVisible(true);
 
 		sp.getChildren().addAll(r, t);
 
-		root.getChildren().add(sp);
+		rootC.getChildren().add(sp);
 		panesCustom.add(sp);
 		textsCustom.add(t);
+		
+		
+		stageCustom.show();
+		
+		
 	}
 
 	@Override
@@ -900,12 +1026,18 @@ public class GUIManager extends Application implements ITouchUI {
 		textsCustom.clear();
 		rectanclesCustom.clear();
 		panes.clear();
-		panesCustom.clear();
-
+		panesCustom.clear();	
+		scenes.clear();
+		stages.clear();
+		
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				root.getChildren().clear();
+				for(Group r : roots) {
+					r.getChildren().clear();
+				}
+				roots.clear();
 			}
 		});
 

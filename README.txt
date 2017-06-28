@@ -1,8 +1,10 @@
-TouchUI via IPAACA:
+ButtonFactory via IPAACA:
+
+Description: Creates AlwaysOnTop Buttons, listening to ipaaca categories.
 
 How to compile and run: run 'ant' in this folder, or 'ant test'
 
-IMPORTANT (if TouchUI won't run): 
+IMPORTANT (if ButtonFactory won't run): 
 java -version should print "Java(TM) SE Runtime Environment (build 1.8.***)"
 The SE Runtime instead of openjdk is required because of javafx. This might change in the future.
 
@@ -15,6 +17,8 @@ ipaaca outputbuffer category:		touch_ui_reply
 Available uses as request (key,value):
 
 Multiple values are allowed when separated by pipes, e.g.: "texts":"Ja|Nein|Vielleicht"
+
+Quotes, semi-colons and square brackets need to be replaced.
 
 "texts":"[buttontexts]"
 "images":"[absolute paths to images, requires: handles]"
@@ -59,3 +63,7 @@ touch_ui_reply:
 
 Examples and tests:
 Running 'ant test' shows lots of usecases, how to create the IUs is shown in src/main/java/TestUp.java
+
+Troubleshooting:
+
+If you need quotes on a button, go to IpaacaControl.java and change 'filterQuotes' to false;
