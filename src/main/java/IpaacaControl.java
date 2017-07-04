@@ -1,5 +1,5 @@
 /*
- * This file is part of ButtomFactory.
+ * This file is part of ButtonFactory.
  *
  * Copyright (c) 2017-2017 Sören Klett
  *                         CITEC, Bielefeld University
