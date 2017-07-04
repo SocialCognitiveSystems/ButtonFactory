@@ -66,4 +66,6 @@ Running 'ant test' shows lots of usecases, how to create the IUs is shown in src
 
 Troubleshooting:
 
-If you need quotes on a button, go to IpaacaControl.java and change 'filterQuotes' to false;
+If you need quotes at the start and or end of a button, you need to pre- or/abd append one more quote, like:
+texts:""mybutton"" will result in: "mybutton". The Buttonfactory will automatically remove one leading and 
+one trailing quote.

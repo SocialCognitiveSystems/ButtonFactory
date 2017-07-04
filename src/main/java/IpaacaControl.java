@@ -43,11 +43,12 @@ import javafx.application.Platform;
 public class IpaacaControl {
 
 	boolean filterQuotes = true;
-	
+
 	InputBuffer in;
 	OutputBuffer error = new OutputBuffer("touch_ui");
 	GUIManager gui;
 	public boolean ready = false;
+	private boolean warned = false;
 
 	final class MyEventHandler implements HandlerFunctor {
 		@Override
@@ -89,24 +90,46 @@ public class IpaacaControl {
 
 	public void handleRequest(Map<String, String> payload) {
 
-		System.out.println(payload);
-		
-		if(filterQuotes) {
-			
-			Map<String, String> payloadTemp = new HashMap<>();			
+		if (filterQuotes) {
+
+			Map<String, String> payloadTemp = new HashMap<>();
 			Set<String> keys = new HashSet<>();
 			keys.addAll(payload.keySet());
-			
-			for(String key :  keys) {
-				payloadTemp.put(key.replace("\"", ""), payload.get(key).replace("\"", ""));
+
+			for (String key : keys) {
+
+				String value = payload.get(key);
+				if (value.startsWith("\"") && value.endsWith("\"")) {
+
+					payloadTemp.put(key.replace("\"", ""), value.substring(1, value.length() - 1));
+
+					if (!warned) {
+						System.out.println("I removed a trailing and a leading quote from values. "
+								+ "This might be the right thing, but if you want those quotes, pre- "
+								+ "and append another to your payload values");
+
+						LocalMessageIU iu_out = new LocalMessageIU("touch_ui_reply");
+						iu_out.getPayload().put("error", "request");
+						iu_out.getPayload().put("log",
+								"if you miss some quotes (\"\"), add one more to " + "the start and end of the buttontext");
+						error.add(iu_out);
+						warned = true;
+					}
+
+				} else {
+					payloadTemp.put(key, value);
+				}
+				
 			}
-			
+
 			payload = payloadTemp;
-			
+
 		}
-		
+
 		final Map<String, String> payloadFinal = payload;
-		
+
+		System.out.println(payloadFinal);
+
 		if (payloadFinal.get("cmd") != null) {
 			if (payloadFinal.get("cmd").equals("hideAll")) {
 				gui.hideAll();
@@ -124,41 +147,41 @@ public class IpaacaControl {
 
 		if (payloadFinal.get("images") != null) {
 			String[] images = payloadFinal.get("images").split("\\|");
-			
-			if(!payloadFinal.containsKey("handles")) {
+
+			if (!payloadFinal.containsKey("handles")) {
 				LocalMessageIU iu_out = new LocalMessageIU("touch_ui_reply");
 				iu_out.getPayload().put("error", "request");
 				iu_out.getPayload().put("log", "no handles found for images. add key=handles with value=H1|H2|...");
 				error.add(iu_out);
 				return;
 			}
-			
+
 			String[] imageWidths = {};
 			String[] imageHeights = {};
-			if(payloadFinal.containsKey("imageWidths")) {
+			if (payloadFinal.containsKey("imageWidths")) {
 				imageWidths = payloadFinal.get("imageWidths").split("\\|");
 			}
-			if(payloadFinal.containsKey("imageHeights")) {
+			if (payloadFinal.containsKey("imageHeights")) {
 				imageHeights = payloadFinal.get("imageHeights").split("\\|");
 			}
-			
+
 			String[] handles = payloadFinal.get("handles").split("\\|");
-			for(int i = 0; i < images.length; i++) {
+			for (int i = 0; i < images.length; i++) {
 				String width = null;
 				String height = null;
-				
-				if(imageWidths.length > i) {
+
+				if (imageWidths.length > i) {
 					width = imageWidths[i];
-				}			
-				if(imageHeights.length > i) {
+				}
+				if (imageHeights.length > i) {
 					height = imageHeights[i];
-				}		
+				}
 				gui.addImageButton(images[i], handles[i], width, height);
 			}
 		} else if (payloadFinal.get("texts") != null) {
 
 			String[] texts = payloadFinal.get("texts").split("\\|");
-			
+
 			String[] positions = null;
 			if (payloadFinal.get("positions") != null) {
 				positions = payloadFinal.get("positions").split("\\|");
@@ -173,7 +196,7 @@ public class IpaacaControl {
 				}
 
 				if (payloadFinal.containsKey("positions")) {
-					
+
 					for (String p : positions) {
 						gui.removeButton(Integer.parseInt(p));
 					}
@@ -201,15 +224,14 @@ public class IpaacaControl {
 						position = Integer.parseInt(positions[i]);
 					}
 					final int posFinal = position < gui.minPos ? position : gui.minPos;
-					
-						
+
 					final int id = i;
-					
+
 					Platform.runLater(new Runnable() {
 						@Override
 						public void run() {
-							if (posFinal != -1) {													
-//								gui.addButton(text, posFinal);
+							if (posFinal != -1) {
+								// gui.addButton(text, posFinal);
 								String width = payloadFinal.get("width");
 								String height = payloadFinal.get("height");
 								String colorButton = payloadFinal.get("colorButton");
@@ -222,10 +244,10 @@ public class IpaacaControl {
 								String opacity = payloadFinal.get("opacity");
 								String marginX = payloadFinal.get("marginX");
 								String marginY = payloadFinal.get("marginY");
-								
-								marginX = splitValue(marginX, texts.length)[id];									
+
+								marginX = splitValue(marginX, texts.length)[id];
 								marginY = splitValue(marginY, texts.length)[id];
-								width = splitValue(width, texts.length)[id];									
+								width = splitValue(width, texts.length)[id];
 								height = splitValue(height, texts.length)[id];
 								colorButton = splitValue(colorButton, texts.length)[id];
 								colorPressed = splitValue(colorPressed, texts.length)[id];
@@ -235,16 +257,16 @@ public class IpaacaControl {
 								fontBold = splitValue(fontBold, texts.length)[id];
 								fontColor = splitValue(fontColor, texts.length)[id];
 								opacity = splitValue(opacity, texts.length)[id];
-								
-								if(!payloadFinal.containsKey("colorButton") && payloadFinal.containsKey("color")) {
+
+								if (!payloadFinal.containsKey("colorButton") && payloadFinal.containsKey("color")) {
 									colorButton = payloadFinal.get("color");
 									colorButton = splitValue(colorButton, texts.length)[id];
 								}
-								
+
 								gui.minPos++;
-								
-								gui.addButton(text, posFinal, width, height, colorButton,
-										colorPressed, colorBorder, font, fontSize, fontBold, fontColor, opacity, marginX, marginY);
+
+								gui.addButton(text, posFinal, width, height, colorButton, colorPressed, colorBorder, font, fontSize, fontBold,
+										fontColor, opacity, marginX, marginY);
 							} else {
 								if (payloadFinal.containsKey("translateX") || payloadFinal.containsKey("translateY")) {
 
@@ -262,12 +284,12 @@ public class IpaacaControl {
 									String opacity = payloadFinal.get("opacity");
 									String marginX = payloadFinal.get("marginX");
 									String marginY = payloadFinal.get("marginY");
-									
-									translateX = splitValue(translateX, texts.length)[id];									
+
+									translateX = splitValue(translateX, texts.length)[id];
 									translateY = splitValue(translateY, texts.length)[id];
-									marginX = splitValue(marginX, texts.length)[id];									
+									marginX = splitValue(marginX, texts.length)[id];
 									marginY = splitValue(marginY, texts.length)[id];
-									width = splitValue(width, texts.length)[id];									
+									width = splitValue(width, texts.length)[id];
 									height = splitValue(height, texts.length)[id];
 									colorButton = splitValue(colorButton, texts.length)[id];
 									colorPressed = splitValue(colorPressed, texts.length)[id];
@@ -277,19 +299,19 @@ public class IpaacaControl {
 									fontBold = splitValue(fontBold, texts.length)[id];
 									fontColor = splitValue(fontColor, texts.length)[id];
 									opacity = splitValue(opacity, texts.length)[id];
-									
-									if(!payloadFinal.containsKey("colorButton") && payloadFinal.containsKey("color")) {
+
+									if (!payloadFinal.containsKey("colorButton") && payloadFinal.containsKey("color")) {
 										colorButton = payloadFinal.get("color");
 										colorButton = splitValue(colorButton, texts.length)[id];
 									}
-									
-									gui.addButton(text, translateX, translateY, width, height, colorButton,
-											colorPressed, colorBorder, font, fontSize, fontBold, fontColor, opacity);
+
+									gui.addButton(text, translateX, translateY, width, height, colorButton, colorPressed, colorBorder, font,
+											fontSize, fontBold, fontColor, opacity);
 								} else {
 									int posFinal = gui.rectancles.size() < gui.minPos ? gui.rectancles.size() : gui.minPos;
-									
+
 									gui.minPos++;
-									
+
 									String width = payloadFinal.get("width");
 									String height = payloadFinal.get("height");
 									String colorButton = payloadFinal.get("colorButton");
@@ -302,11 +324,11 @@ public class IpaacaControl {
 									String opacity = payloadFinal.get("opacity");
 									String marginX = payloadFinal.get("marginX");
 									String marginY = payloadFinal.get("marginY");
-									
-									marginX = splitValue(marginX, texts.length)[id];									
+
+									marginX = splitValue(marginX, texts.length)[id];
 									marginY = splitValue(marginY, texts.length)[id];
 
-									width = splitValue(width, texts.length)[id];									
+									width = splitValue(width, texts.length)[id];
 									height = splitValue(height, texts.length)[id];
 									colorButton = splitValue(colorButton, texts.length)[id];
 									colorPressed = splitValue(colorPressed, texts.length)[id];
@@ -316,14 +338,14 @@ public class IpaacaControl {
 									fontBold = splitValue(fontBold, texts.length)[id];
 									fontColor = splitValue(fontColor, texts.length)[id];
 									opacity = splitValue(opacity, texts.length)[id];
-									
-									if(!payloadFinal.containsKey("colorButton") && payloadFinal.containsKey("color")) {
+
+									if (!payloadFinal.containsKey("colorButton") && payloadFinal.containsKey("color")) {
 										colorButton = payloadFinal.get("color");
 										colorButton = splitValue(colorButton, texts.length)[id];
 									}
-									
-									gui.addButton(text, posFinal, width, height, colorButton,
-											colorPressed, colorBorder, font, fontSize, fontBold, fontColor, opacity, marginX, marginY);
+
+									gui.addButton(text, posFinal, width, height, colorButton, colorPressed, colorBorder, font, fontSize,
+											fontBold, fontColor, opacity, marginX, marginY);
 								}
 							}
 						}
@@ -339,34 +361,34 @@ public class IpaacaControl {
 			if (payloadFinal.get("remove") != null) {
 
 				if (payloadFinal.containsKey("positions")) {
-					
+
 					for (String p : positions) {
 						gui.removeButton(Integer.parseInt(p));
 					}
 				}
 
-			}			
+			}
 		}
 	}
-	
+
 	public String[] splitValue(String value, int length) {
-		
+
 		String[] result = new String[length];
-				
-		if(value == null) {
+
+		if (value == null) {
 			return result;
-		} else if(!value.contains("|")) {
-			for(int i = 0; i < length; i++) {
+		} else if (!value.contains("|")) {
+			for (int i = 0; i < length; i++) {
 				result[i] = value;
 			}
 		} else {
-			for(int i = 0; i < length; i++) {
+			for (int i = 0; i < length; i++) {
 				result[i] = value.split("\\|")[i];
 			}
-		} 	
-		
+		}
+
 		return result;
-		
+
 	}
 
 	public void updateConfig(Map<String, String> payload) {

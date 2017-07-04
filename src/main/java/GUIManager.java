@@ -314,7 +314,6 @@ public class GUIManager extends Application implements ITouchUI {
 			if(maxY < temp.getLayoutY() + r.getHeight()) {
 				maxY = temp.getLayoutY() + r.getHeight() + 5;
 			}
-			System.out.println(maxX);
 			
 			primaryStage.setWidth(maxX);
 			primaryStage.setHeight(maxY);
@@ -1004,14 +1003,11 @@ public class GUIManager extends Application implements ITouchUI {
 		texts.remove(position);
 		rectancles.remove(position);
 		panes.remove(position);
-		System.out.println(root.getChildren().size());
 
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				System.out.println(root.getChildren().size());
 				root.getChildren().remove(position);
-				System.out.println(root.getChildren().size());
 			}
 		});
 

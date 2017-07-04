@@ -64,7 +64,7 @@ public class TestUp {
 		
 		out = new OutputBuffer("touch_ui_reply");
 		iu = new LocalMessageIU("touch_ui_request");
-		iu.getPayload().put("texts", "A|B|C|D");	
+		iu.getPayload().put("\"texts\"", "\"A|B|C|D\"");	
 		iu.getPayload().put("color", "red|orange|green|0xeeeeee");
 		iu.getPayload().put("width", "200|100|100|200");
 		// adjusting margins because of different widths
