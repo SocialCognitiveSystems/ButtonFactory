@@ -197,7 +197,7 @@ public class GUIManager extends Application implements ITouchUI {
 
 		path = f.getAbsolutePath();
 
-		Image img = new Image("file://" + path, Integer.parseInt(imageWidthC), Integer.parseInt(imageHeightC), false, false);
+		Image img = new Image("file://" + path, Integer.parseInt(imageWidthC), Integer.parseInt(imageHeightC), false, true);
 		ImageView iv = new ImageView(img);
 
 		try {
@@ -262,7 +262,7 @@ public class GUIManager extends Application implements ITouchUI {
 				iv.setVisible(true);
 
 				sp.setVisible(true);
-
+				
 				// texts.add(iv);
 				panes.add(sp);
 			} else {

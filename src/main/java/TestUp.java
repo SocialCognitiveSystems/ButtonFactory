@@ -84,8 +84,8 @@ public class TestUp {
 		iu.getPayload().put("cmd", "removeAll");
 		// full paths are recommended, but filenames also work if image is in working directory
 		iu.getPayload().put("images", "test.png|test.png|test.png|test.png");		
-		iu.getPayload().put("imageWidths", "100|100|100|100");
-//		iu.getPayload().put("imageHeights", "40|40|0|40");	
+		iu.getPayload().put("imageWidths", "299|200|100|100");
+		iu.getPayload().put("imageHeights", "99|40|10|40");	
 		iu.getPayload().put("handles", "TEST|A|B|C");
 		out.add(iu);
 		
